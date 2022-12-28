@@ -102,7 +102,7 @@ function getDistanceMap(nodeId, graph) {
   allPaths.clear();
   findAllPaths('AA', nodesWithValve, new Set(), 26);
   
-  function getScorePath(path, time = 26) {
+function getScorePath(path, time = 26) {
     let totalScore = 0;
     const allreadyOpened = new Set();
     for (let i=1; i<path.length; i++) {
@@ -118,25 +118,28 @@ function getDistanceMap(nodeId, graph) {
       totalScore += score;
     }
     return totalScore;
-  }
+}
   
-  const paths = [...allPaths];
-  const scoreMap = new Map();
-  for (let i = 0; i < paths.length; i++) {
+const paths = [...allPaths];
+const scoreMap = new Map();
+
+  // now we have all paths; we must get all score paths from each path
+for (let i = 0; i < paths.length; i++) {
     scoreMap.set(i, getScorePath(paths[i]));
     // purify path to keep only the valve nodes
     paths[i] = new Set(paths[i].filter(nodeId => nodesWithValve.has(nodeId)));
-  }
+}
   
-  function everyItemIsDifferent(set1, set2) {
+function everyItemIsDifferent(set1, set2) {
     for (const item of set1) {
       if (set2.has(item)) return false;
     }
     return true;
-  }
-  
-  let max = -Infinity;
-  for (let iHuman = 0; iHuman < paths.length; iHuman++) {
+}
+
+// this is the complicated part
+let max = -Infinity;
+for (let iHuman = 0; iHuman < paths.length; iHuman++) {
     for (let iElephant = iHuman + 1; iElephant < paths.length; iElephant++) {
       // search pair of paths when one path contains only the valve not cointained by the other path
       if (everyItemIsDifferent(paths[iHuman], paths[iElephant])) {
@@ -144,7 +147,7 @@ function getDistanceMap(nodeId, graph) {
         if (score > max) max = score;
       }
     }
-  }
+}
   
   console.log(max);
   console.timeEnd("ExecutionTime");
